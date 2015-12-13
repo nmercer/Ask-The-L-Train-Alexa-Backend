@@ -1,0 +1,8 @@
+MTA_KEY = 'your-mta-key-here'
+STATIONS_FILE = './stations.json'
+CROSS_ORIGIN = 'http://yourdomain.com'
+MAX_TRAINS=10
+MAX_MINUTES=30
+CACHE_SECONDS=60
+THREADED=True
+DEBUG = True
