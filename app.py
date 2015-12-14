@@ -112,7 +112,9 @@ def get_time_data(time):
    else:
         seconds_str = str(seconds) + " Seconds"
 
-   if minutes == 1:
+   if minutes in [59, 58, 57, 56, 55, 54, 53, 52, 51, 50]:
+        return False
+   elif minutes == 1:
        min_str = "1 Minute"
    elif minutes == 0:
        min_str = ""
@@ -179,9 +181,14 @@ def index():
     print data[0]
     print direction
 
-    first_train = get_time_data(data[0][direction][0]['time'])
-    second_train = get_time_data(data[0][direction][1]['time'])
-    third_train = get_time_data(data[0][direction][2]['time']) 
+    # Todo - This is hilariously bad, the entire thing...
+    train_counter = 0
+    first_train = get_time_data(data[0][direction][train_counter]['time'])
+        if not first_train:
+            train_counter += 1
+            first_train = get_time_data(data[0][direction][train_counter]['time'])
+    train_counter += 1
+    second_train = get_time_data(data[0][direction][train_counter]['time'])
 
     say = "%s. The following train is coming in %s" % (first_train, second_train)
     return jsonify({
