@@ -170,9 +170,9 @@ def index():
             print "---- STATION UPDATED BROKE ----"
             pass
     if direction:
-        if station == '184':
+        if station == '184' and direction == 'N':
             return jsonify({"say":"You cannot travel that direction from the 8th Avenue stop. What direction do you travel? For example: Towards Manhattan, or to Brooklyn.", 'function':'getDirection'})
-        elif station == '399':
+        elif station == '399' and direction == 'S':
             return jsonify({"say":"You cannot travel that direction from the Canarsie Rockaway Parkway stop. What direction do you travel? For example: Towards Manhattan, or to Brooklyn.", 'function':'getDirection'})
         update_direction(user_id, direction)
 
@@ -229,8 +229,11 @@ def index():
         say = first_train
     else:
         train_counter += 1
-        second_train = get_time_data(data[0][direction][train_counter]['time'])
-        say = "%s. The following train is coming in %s" % (first_train, second_train)
+        try:
+            second_train = get_time_data(data[0][direction][train_counter]['time'])
+            say = "%s. The following train is coming in %s" % (first_train, second_train)
+        except:
+            say = first_train
 
     return jsonify({
         'say': say,
