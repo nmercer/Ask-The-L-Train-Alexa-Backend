@@ -170,9 +170,9 @@ def index():
             print "---- STATION UPDATED BROKE ----"
             pass
     if direction:
-        if station == '184' and direction == 'N':
+        if station == 184 and direction == 'N':
             return jsonify({"say":"You cannot travel that direction from the 8th Avenue stop. What direction do you travel? For example: Towards Manhattan, or to Brooklyn.", 'function':'getDirection'})
-        elif station == '399' and direction == 'S':
+        elif station == 399 and direction == 'S':
             return jsonify({"say":"You cannot travel that direction from the Canarsie Rockaway Parkway stop. What direction do you travel? For example: Towards Manhattan, or to Brooklyn.", 'function':'getDirection'})
         update_direction(user_id, direction)
 
