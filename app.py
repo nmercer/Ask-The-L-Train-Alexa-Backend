@@ -201,14 +201,37 @@ def index():
 
     # Todo - This is hilariously bad, the entire thing...
     train_counter = 0
-    first_train = get_time_data(data[0][direction][train_counter]['time'])
+    try:
+        first_train = get_time_data(data[0][direction][train_counter]['time'])
+    except:
+        first_train = False
+
     if not first_train:
         train_counter += 1
-        first_train = get_time_data(data[0][direction][train_counter]['time'])
-    train_counter += 1
-    second_train = get_time_data(data[0][direction][train_counter]['time'])
+        try:
+            first_train = get_time_data(data[0][direction][train_counter]['time'])
+        except:
+            first_train = False
 
-    say = "%s. The following train is coming in %s" % (first_train, second_train)
+        train_counter += 1 
+        if not first_train:
+            try:
+                first_train = get_time_data(data[0][direction][train_counter]['time'])
+            except:
+                first_train = False
+
+    if not first_train:
+        return jsonify({
+            'say': "We cannot find live train data for your station.",
+            'function':'trainTime',
+        })
+    elif train_counter == 2:
+        say = first_train
+    else:
+        train_counter += 1
+        second_train = get_time_data(data[0][direction][train_counter]['time'])
+        say = "%s. The following train is coming in %s" % (first_train, second_train)
+
     return jsonify({
         'say': say,
         'function':'trainTime',
