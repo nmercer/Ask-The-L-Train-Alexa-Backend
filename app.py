@@ -156,7 +156,7 @@ def index():
     if request.args.get('reset'):
         delete_user(user_id)
         user = create_new_user(user_id)
-        return jsonify({'function':'getStation', 'say':'Your settings have been reset. What is the station you would like train times for? For example: Jefferson Street Or Union Square.'})
+        return jsonify({'function':'reset', 'say':'Your settings have been reset. What is the station you would like train times for? For example: Jefferson Street Or Union Square.'})
 
     print "----- station -----"
     print station
