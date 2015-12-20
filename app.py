@@ -158,9 +158,9 @@ def index():
         user = create_new_user(user_id)
         return jsonify({'function':'reset', 'say':'Your settings have been reset. What is the station you would like train times for? For example: Jefferson Street Or Union Square.'})
 
-    print "----- station -----"
+    print "----- WTF ----------------------------------------------------"
     print station
-    print type(station)
+    print direction
 
     if station:
         try:
