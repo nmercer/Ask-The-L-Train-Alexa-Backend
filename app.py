@@ -83,6 +83,13 @@ def create_new_user(user_id):
     conn.commit()
     conn.close()
 
+def delete_user(user_id):
+    conn = sqlite3.connect('mta.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM users WHERE id='%s'" % (user_id))
+    conn.commit()
+    conn.close()
+
 def update_station(user_id, station):
     conn = sqlite3.connect('mta.db')
     c = conn.cursor()
@@ -103,6 +110,7 @@ def get_time_data(time):
    hours = seconds // 3600
    minutes = int((seconds % 3600) // 60)
    seconds = int(seconds % 60)
+
    if minutes == 0 and seconds == 0:
        return "Right Now"
    if seconds == 1:
@@ -137,12 +145,18 @@ def index():
     user = get_user_data(user_id)
     print "---- user ----"
     print user
+
     if not user:
         user = create_new_user(user_id)
         return jsonify({'function':'intro'})
 
     station = request.args.get('station')
     direction = request.args.get('direction')
+
+    if request.args.get('reset'):
+        delete_user(user_id)
+        user = create_new_user(user_id)
+        return jsonify({'function':'getStation', 'say':'Your settings have been reset. What is the station you would like train times for? For example: Jefferson Street Or Union Square.'})
 
     print "----- station -----"
     print station
