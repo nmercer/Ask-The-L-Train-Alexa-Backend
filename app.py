@@ -136,7 +136,7 @@ def get_time_data(time):
    else:
         return seconds_str
 
-    return False
+   return False
 
 @app.route('/')
 @cross_origin
