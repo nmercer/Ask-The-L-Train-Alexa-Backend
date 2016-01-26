@@ -16,6 +16,9 @@ from functools import wraps
 import logging
 import pytz
 import sqlite3
+import urllib2
+import re
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 app.config.update(
@@ -104,8 +107,34 @@ def update_direction(user_id, direction):
     conn.commit()
     conn.close()
 
+def get_service_string():
+    try:
+        service_data = urllib2.urlopen('http://web.mta.info/status/serviceStatus.txt')
+        service_html = service_data.read()
+        service_soup = BeautifulSoup(service_html)
+
+        for service in service_soup.find_all('line'):
+            if '<name>L</name>' in str(service.find('name')):
+                status = service.find('status').text
+                if status == 'GOOD SERVICE':
+                    return "L Trains Are Operating Normally."
+                else:
+                    text = service.find('text')
+                    if text:
+                        soup = BeautifulSoup(text.text)
+                        clean_txt = soup.text.replace('Posted:', '').replace("[", "").replace("]", " ").replace("-", " ").replace("Service Change", "Service Change.")
+                        clean_txt = clean_txt.replace('NYC', 'N. Y. C.').replace('Delays', 'Delays.')
+                        clean_txt = re.sub( '\d{2}/\d{2}/\d{4}', '', clean_txt).strip()
+                        clean_txt = re.sub( '(\d{1}|\d{2}):\d{2}(AM|PM)', '', clean_txt).strip()
+                        clean_txt = re.sub(r'\s+', ' ', clean_txt)
+                        return clean_txt
+    except:
+        pass
+
+    return ""
+
 def get_time_data(time):
-   time_dif = time.replace(tzinfo=pytz.utc) - datetime.now(pytz.utc) 
+   time_dif = time.replace(tzinfo=pytz.utc) - datetime.now(pytz.utc)
    seconds = time_dif.total_seconds()
    hours = seconds // 3600
    minutes = int((seconds % 3600) // 60)
@@ -215,7 +244,7 @@ def index():
         except:
             first_train = False
 
-        train_counter += 1 
+        train_counter += 1
         if not first_train:
             try:
                 first_train = get_time_data(data[0][direction][train_counter]['time'])
@@ -236,6 +265,10 @@ def index():
             say = "%s. The following train is coming in %s" % (first_train, second_train)
         except:
             say = first_train
+
+    ss = get_service_string()
+    if ss:
+        say += '. ' + ss
 
     return jsonify({
         'say': say,
